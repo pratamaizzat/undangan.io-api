@@ -6,3 +6,98 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model PhoneCode {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  code String @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("phonecodes")
+}
+
+model Permission {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  roles PermissionsOnRoles[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("permissions")
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  permissions PermissionsOnRoles[]
+  users       UsersOnRoles[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("roles")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  username  String    @unique
+  email     String    @unique
+  password  String
+  lastLogin DateTime?
+  lastIp    String?
+
+  contacts Contact[]
+  roles    UsersOnRoles[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("users")
+}
+
+model PermissionsOnRoles {
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       Int
+
+  @@id([permissionId, roleId])
+  @@map("permissionsonroles")
+}
+
+model UsersOnRoles {
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  @@id([userId, roleId])
+  @@map("usersonroles")
+}
+
+model Contact {
+  id          Int    @id @default(autoincrement())
+  name        String
+  phoneNumber String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("contacts")
+}
