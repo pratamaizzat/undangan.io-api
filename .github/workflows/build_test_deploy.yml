@@ -8,7 +8,6 @@ name: Build, test, and deploy
 
 env:
   PNPM_VERSION: 7.2.1
-  NODE_VERSION: 16
 
 jobs:
   build:
@@ -21,7 +20,7 @@ jobs:
         uses: actions/setup-node@v3
         # if: ${{ steps.docs-change.outputs.docsChange != 'docs only change' }}
         with:
-          node-version: ${NODE_VERSION}
+          node-version: 16.15.0
           check-latest: true
 
       - uses: actions/checkout@v3
