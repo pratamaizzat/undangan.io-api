@@ -72,5 +72,4 @@ jobs:
         with:
           path: ./*
           key: ${{ github.sha }}-${{ github.run_number }}
-      - run: ./scripts/check-manifests.js
       - run: pnpm lint
