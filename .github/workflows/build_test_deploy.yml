@@ -13,14 +13,14 @@ jobs:
   build:
     name: Build App
     runs-on: ubuntu-latest
-    # outputs:
-    #   docsChange: ${{ steps.docs-change.outputs.DOCS_CHANGE }}
+    outputs:
+      docsChange: ${{ steps.docs-change.outputs.DOCS_CHANGE }}
     steps:
       - name: Setup Node
         uses: actions/setup-node@v3
-        # if: ${{ steps.docs-change.outputs.docsChange != 'docs only change' }}
+        if: ${{ steps.docs-change.outputs.docsChange != 'docs only change' }}
         with:
-          node-version: 16.15.0
+          node-version: 16
           check-latest: true
 
       - uses: actions/checkout@v3
@@ -42,14 +42,15 @@ jobs:
             pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
 
       - run: pnpm install
+      - run: pnpm run generate
       - run: pnpm run prebuild
       - run: pnpm run build
 
-      # - name: Check docs only change
-      #   run: echo ::set-output name=DOCS_CHANGE::$(node skip-docs-change.js echo 'not-docs-only-change')
-      #   id: docs-change
+      - name: Check docs only change
+        run: echo ::set-output name=DOCS_CHANGE::$(node scripts/skip-docs-change.js echo 'not-docs-only-change')
+        id: docs-change
 
-      # - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
+      - run: echo ${{steps.docs-change.outputs.DOCS_CHANGE}}
 
       - uses: actions/cache@v3
         id: cache-build
